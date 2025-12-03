@@ -52,7 +52,11 @@ The model automatically generates granular CSVs and visualization charts:
 * `numpy`, `pandas`, `scipy`, `matplotlib`, `seaborn`
 
 ### Installation
+
 ```bash
-git clone [https://github.com/your-username/vectorized-power-solver.git](https://github.com/your-username/vectorized-power-solver.git)
-cd vectorized-power-solver
+# Clone the repository
+git clone [https://github.com/hichamahouzi/GridVec.git](https://github.com/hichamahouzi/GridVec.git)
+cd GridVec
+
+# Install dependencies
 pip install -r requirements.txt
