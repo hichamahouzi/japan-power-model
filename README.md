@@ -1,76 +1,58 @@
-# ⚡ Japan Power Market Optimization Model
+# ⚡ GridVec
 
-## 🎯 Overview
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-This repository contains a robust Python-based optimization model for the **Japanese wholesale electricity market (JEPX)**. 
+**GridVec** is a high-performance, vectorized solver for nodal power markets.
 
-The model uses **Linear Programming (LP)** to simulate day-ahead market clearing across all 9 regional grids in Japan (HOK, TOH, TOK, CHU, HKU, KAN, CHK, SHI, KYU). It accounts for:
+Originally built for the **Japanese (JEPX)** grid, it uses **NumPy vectorization** and **Linear Programming** to solve year-long economic dispatch problems significantly faster than traditional iterative Unit Commitment tools.
 
-* **Merit Order Dispatch:** Optimizes generation from Thermal (Coal, Gas, Oil), Nuclear, Hydro, and Renewables based on marginal costs.
-* **Market Coupling:** Explicitly models interconnector transmission limits between regions to solve for coupled or split market prices.
-* **Congestion Analysis:** Identifies congested lines and "super groups" (physically coupled price zones).
-* **Marginal Price Setters:** Tracks exactly which generation unit sets the clearing price in each region for every hour.
+## 🚀 Why GridVec?
 
-## ⚙️ Key Features
+Commercial tools like **PLEXOS** or **Aurora** are powerful but often computationally heavy, expensive, and slow for long-term scenario analysis. This solver bridges the gap:
 
-* **Object-Oriented Design:** Modular `PowerMarketModel` class for easy extension.
-* **Vectorized Data Processing:** Fast processing of 8,760 hourly time steps using NumPy/Pandas.
-* **Robust Solver:** Uses `scipy.optimize.linprog` (Highs method) with automatic failure handling and fallback logic.
-* **Detailed Analytics:** Exports granular data:
-    * `MODEL_PRICES`: Locational Marginal Prices (LMP) per region.
-    * `MODEL_FLOWS`: Physical power flows on interconnectors.
-    * `MODEL_CONGESTION`: Binary flags indicating constrained lines.
-    * `SETTERS`: Daily files identifying the price-setting unit.
-    * `GROUPS`: Daily files visualizing physically coupled price zones.
+* **⚡ Blazing Fast:** Solves unconstrained market clearing for 8,760 hours effectively instantaneously using matrix vectorization.
+* **🔗 Coupled Optimization:** Solves transmission-constrained LMPs (Locational Marginal Prices) using `scipy.highs` with robust handling of congestion.
+* **📉 Transparent Logic:** Pure Python/Pandas codebase—no black-box algorithms. Easy to audit, modify, and integrate into ML pipelines.
+* **🌏 Topology Agnostic:** While configured for Japan (9 regions), the **Binary Topology Matrix** design makes it trivial to adapt for:
+    * **Australia (NEM):** 5 regions (QLD, NSW, VIC, SA, TAS).
+    * **New Zealand (NZEM):** North/South Island nodes.
+    * **Europe:** Cross-border zonal flows.
 
-## 🚀 Getting Started
+## ⚙️ Core Methodology
+
+### 1. Vectorized Pre-Solving
+Unlike standard loops that calculate intersections hour-by-hour, this model builds 3D Supply Stacks (Time × Units × Price) and solves the **Unconstrained Market Intersection** using vectorized NumPy operations.
+
+
+* *Result:* Immediate calculation of isolated regional prices for all 8,760 hours in sub-second time.
+
+### 2. Linear Programming (LP) for Coupling
+For coupled simulations, the model formulates a dispatch optimization problem:
+$$\text{Minimize } C = \sum_{g, t} (MC_{g} \cdot P_{g,t})$$
+Subject to:
+* **Nodal Balance:** Demand must be met at every node.
+* **Transmission Limits:** Interconnector flows constrained by dynamic NTC (Net Transfer Capacity).
+* **Unit Bounds:** Generation limited by available capacity (thermal/hydro/VRE).
+
+## 📊 Key Output Metrics
+
+The model automatically generates granular CSVs and visualization charts:
+
+* **LMP Prices:** Nodal prices for every region.
+* **Physical Flows:** Net flow on every interconnector.
+* **Congestion Flags:** Binary indicators for constrained lines.
+* **Price Setters:** Identifies exactly which unit (Nuclear, Coal, Gas, Load Shedding) sets the marginal price per hour.
+* **Coupled Groups:** Daily reports identifying physically coupled price zones (e.g., "East Japan vs West Japan").
+
+## 🛠️ Getting Started
 
 ### Prerequisites
-
 * Python 3.8+
-* Dependencies listed in `requirements.txt`
+* `numpy`, `pandas`, `scipy`, `matplotlib`, `seaborn`
 
 ### Installation
-
-1.  Clone the repository:
-    ```bash
-    git clone [https://github.com/your-username/japan-power-model.git](https://github.com/your-username/japan-power-model.git)
-    cd japan-power-model
-    ```
-
-2.  Install required packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-### Data Requirements
-
-The model expects the following CSV files in your data directory (dummy files provided in `example_data/`):
-
-* `Demand_YYYY.csv`: Hourly demand profiles.
-* `Solar_YYYY.csv`: Hourly solar generation profiles.
-* `Wind_YYYY.csv`: Hourly wind generation profiles.
-* `Availability_YYYY.csv`: Hourly availability factors for thermal units.
-* `Prices_YYYY_Date.csv`: Daily fuel/carbon prices.
-* `Plantlist_JP.csv`: Master list of generation units (Capacity, Efficiency, Fuel Hub).
-* `Interconnectors_Import/Export_YYYY.csv`: Transmission limits.
-
-### Running the Model
-
-1.  Open `market_model.py`.
-2.  Update the `BASE_PATH` variable in the `if __name__ == "__main__":` block to point to your data folder (e.g., `example_data`).
-3.  Run the script:
-    ```bash
-    python market_model.py
-    ```
-
-## 📊 Output
-
-Results are saved to your data folder:
-
-* **CSVs:** `MODEL_PRICES_JP_...csv`, `MODEL_FLOWS_JP_...csv`, etc.
-* **Daily Folders:** `SETTERS_DAILY_JP` and `GROUPS_PHYSICAL_JP` containing daily breakdowns.
-
-## ⚖️ License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```bash
+git clone [https://github.com/your-username/vectorized-power-solver.git](https://github.com/your-username/vectorized-power-solver.git)
+cd vectorized-power-solver
+pip install -r requirements.txt

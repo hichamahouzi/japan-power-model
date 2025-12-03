@@ -638,7 +638,7 @@ class ResultVisualizer:
 if __name__ == "__main__":
     # --- USER SETTINGS ---
     # Update this path to your local data folder
-    BASE_PATH = Path(r'/Users/ahouzihicham/open-power-stack/examples/sample_data_jp')
+    BASE_PATH = Path(r'')
     YEAR = 2025
     RUN_NAME = 'JP'
 
