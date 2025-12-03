@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data Files (Don't upload large CSVs unless they are small examples)
+# Keep example_data folder though
+!example_data/
+
+# Output Files
+MODEL_*.csv
+SETTERS_DAILY_*/
+GROUPS_PHYSICAL_*/
+PRICES_ISOLATED_*.csv
+STACK_ORDER_*.csv
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IDE settings
+.idea/
+.vscode/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
